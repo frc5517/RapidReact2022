@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.commands.autonomous.DriveOffTarmac;
+import frc.robot.commands.autonomous.ScoreThenDriveOffTarmac;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
@@ -29,7 +30,13 @@ public class RobotContainer {
   private final Indexer m_indexer = new Indexer();
   private final Manipulator m_manipulator = new Manipulator();
 
+  // Auto commands
   private final DriveOffTarmac m_autoDriveOffTarmac = new DriveOffTarmac(m_drivetrain, 0.5);
+  private final ScoreThenDriveOffTarmac m_autonomous = new ScoreThenDriveOffTarmac(
+    m_manipulator, 0.5, 
+    m_indexer, 0.5, 
+    m_drivetrain, 0.5
+  );
 
   // Define XboxController objects to control the robot with
   private final XboxController m_driveController = new XboxController(Constants.CONTROLLER_DRIVER);
@@ -133,7 +140,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoDriveOffTarmac;
+    // Uncomment the line to run in auto, comment everything else out
+    return m_autonomous;
+    // return m_autoDriveOffTarmac;
   }
 }
