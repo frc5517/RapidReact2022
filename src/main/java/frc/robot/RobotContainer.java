@@ -39,7 +39,7 @@ public class RobotContainer {
   );
 
   // Define XboxController objects to control the robot with
-  private final XboxController m_driveController = new XboxController(Constants.CONTROLLER_DRIVER);
+  private final XboxController m_driverController = new XboxController(Constants.CONTROLLER_DRIVER);
   private final XboxController m_operatorController = new XboxController(Constants.CONTROLLER_OPERATOR);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -51,8 +51,8 @@ public class RobotContainer {
     m_drivetrain.setDefaultCommand(
       new ArcadeDrive(
         m_drivetrain, 
-        () -> m_driveController.getLeftY(), 
-        () -> m_driveController.getRightX()
+        () -> m_driverController.getLeftY(), 
+        () -> m_driverController.getRightX()
       )
     );
   }
@@ -84,21 +84,31 @@ public class RobotContainer {
       .whenPressed(() -> m_manipulator.lower(0.5))
       .whenReleased(() -> m_manipulator.stopArm());
 
-    // Collect Cargo when the A button on the operator controller is pressed
+    // Move the arm to encoder position 200 when the A button on the operator 
+    // controller is pressed
     new JoystickButton(m_operatorController, Button.kA.value)
+      .whenPressed(() -> m_manipulator.moveToSetpoint(200, 0.5));
+
+    // Move the arm to encoder position -200 when the B button on the operator 
+    // controller is pressed
+    new JoystickButton(m_operatorController, Button.kB.value)
+      .whenPressed(() -> m_manipulator.moveToSetpoint(-200, 0.5));
+
+    // Collect Cargo when the Right Bumper on the driver controller is pressed
+    new JoystickButton(m_driverController, Button.kRightBumper.value)
       .whenPressed(() -> gatherCargo())
       .whenReleased(() -> stopCollectorAndIndexer());
 
-    // Eject Cargo slowly when the B button on the operator controller is pressed.
-    // Use this when you want to get rid of cargo, not score
-    new JoystickButton(m_operatorController, Button.kB.value)
-      .whenPressed(() -> removeCargo())
-      .whenReleased(() -> stopCollectorAndIndexer());
+      // Eject Cargo quickly when the Left Bumper on the driver controller is pressed.
+      // Use this to score in the low goal
+      new JoystickButton(m_driverController, Button.kLeftBumper.value)
+        .whenPressed(() -> scoreCargo())
+        .whenReleased(() -> stopCollectorAndIndexer());
 
-    // Eject Cargo quickly when the B button on the operator controller is pressed.
-    // Use this to score in the low goal
-    new JoystickButton(m_operatorController, Button.kB.value)
-      .whenPressed(() -> scoreCargo())
+    // Eject Cargo slowly when the B button on the driver controller is pressed.
+    // Use this when you want to get rid of cargo, not score
+    new JoystickButton(m_driverController, Button.kB.value)
+      .whenPressed(() -> removeCargo())
       .whenReleased(() -> stopCollectorAndIndexer());
   }
 
